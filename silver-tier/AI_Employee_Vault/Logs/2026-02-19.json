@@ -1,0 +1,104 @@
+[
+  {
+    "timestamp": "2026-02-19T12:57:59.817048",
+    "action_type": "create_draft",
+    "actor": "email_mcp_server",
+    "to": "test@example.com",
+    "subject": "Test Email",
+    "file": "draft_20260219_125759_test.json"
+  },
+  {
+    "timestamp": "2026-02-19T12:57:59.819211",
+    "action_type": "create_draft",
+    "actor": "email_mcp_server",
+    "to": "client@example.com",
+    "subject": "Invoice January 2026",
+    "file": "draft_20260219_125759_client.json"
+  },
+  {
+    "timestamp": "2026-02-19T12:57:59.860291",
+    "action_type": "send_email",
+    "actor": "email_mcp_server",
+    "to": "client@example.com",
+    "subject": "Invoice January 2026",
+    "status": "dry_run"
+  },
+  {
+    "timestamp": "2026-02-19T14:06:16.523645",
+    "action_type": "file_action",
+    "actor": "ai_employee",
+    "target": "invoice_task.txt",
+    "details": "\u00ff\u00feS\u0000e\u0000n\u0000d\u0000 \u0000i\u0000n\u0000v\u0000o\u0000i\u0000c\u0000e\u0000 \u0000p\u0000a\u0000y\u0000m\u0000e\u0000n\u0000t\u0000 \u0000t\u0000o\u0000 \u0000c\u0000l\u0000i\u0000e\u0000n\u0000t\u0000\n\u0000\n\u0000\nUrgency: Low\n\n--- AWAITING HUMAN APPROVAL ---\nFlagged at: 2026-02-19 14:06\nStatus: PENDING REVIEW\nApproval file: APPROVAL_invoice_tas",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-19T14:09:23.535783",
+    "action_type": "watcher_start",
+    "actor": "GmailWatcher",
+    "details": "GmailWatcher started",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-19T14:10:07.392515",
+    "action_type": "watcher_start",
+    "actor": "LinkedInWatcher",
+    "details": "LinkedInWatcher started",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-19T14:12:55.064499",
+    "action_type": "create_draft",
+    "actor": "email_mcp_server",
+    "to": "test@example.com",
+    "subject": "Test Email",
+    "file": "draft_20260219_141255_test.json"
+  },
+  {
+    "timestamp": "2026-02-19T14:12:55.211025",
+    "action_type": "create_draft",
+    "actor": "email_mcp_server",
+    "to": "client@example.com",
+    "subject": "Invoice January 2026",
+    "file": "draft_20260219_141255_client.json"
+  },
+  {
+    "timestamp": "2026-02-19T14:12:55.415429",
+    "action_type": "send_email",
+    "actor": "email_mcp_server",
+    "to": "client@example.com",
+    "subject": "Invoice January 2026",
+    "status": "dry_run"
+  },
+  {
+    "timestamp": "2026-02-19T14:15:31.288245",
+    "action_type": "approval_action",
+    "actor": "ai_employee",
+    "target": "APPROVAL_invoice_task_20260219140616.md",
+    "details": "---\ntype: approval_request\naction: payment\nsource_file: invoice_task.txt\ncreated: 2026-02-19T14:06:16.389012\nexpires: 2026-02-19T23:59:59Z\nstatus: pending\n---\n\n## Approval Required \u2014 Payment\n\n### Orig",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-19T14:16:13.206474",
+    "action_type": "approval_action",
+    "actor": "ai_employee",
+    "target": "APPROVAL_invoice_task_20260219141032.md",
+    "details": "---\ntype: approval_request\naction: payment\nsource_file: invoice_task.txt\ncreated: 2026-02-19T14:10:32.372515\nexpires: 2026-02-19T23:59:59Z\nstatus: pending\n---\n\n## Approval Required \u2014 Payment\n\n### Orig",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-19T14:21:08.453269",
+    "action_type": "file_action",
+    "actor": "ai_employee",
+    "target": "invoice_task_20260219142108.txt",
+    "details": "Send invoice payment to client\n\u0a0d\u7255\u6567\u636e\u3a79\u4c20\u776f\u0a0d\u0a0d\u2d2d\u202d\u5741\u4941\u4954\u474e\u4820\u4d55\u4e41\u4120\u5050\u4f52\u4156\u204c\u2d2d\u0d2d\u460a\u616c\u6767\u6465\u6120\u3a74\u3220\u3230\u2d36\u3230\u312d\u2039\u3431\u323a\u0d31\u530a\u6174\u7574\u3a73\u5020\u4e45\u4944\u474e\u5220\u5645\u4549\u0d57\u410a\u7070\u6f72\u6176\u206c\u6966\u656c\u203a\u5041\u5250\u564f\u4c41\u695f\u766e\u696f\u6563\u745f\u7361\u5f6b\u3032\u3632\u3230\u3931\u3431\u3132\u3830\u325f\u3230\u3036\u3132\u3139\u3234\u3031\u2e38\u646d\u0a0d",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-19T14:21:36.152145",
+    "action_type": "approval_action",
+    "actor": "ai_employee",
+    "target": "APPROVAL_invoice_task_20260219142108_20260219142108.md",
+    "details": "---\ntype: approval_request\naction: payment\nsource_file: invoice_task_20260219142108.txt\ncreated: 2026-02-19T14:21:08.204876\nexpires: 2026-02-19T23:59:59Z\nstatus: pending\n---\n\n## Approval Required \u2014 Pa",
+    "result": "success"
+  }
+]

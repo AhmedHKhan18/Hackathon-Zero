@@ -1,0 +1,8 @@
+{
+  "to": "client@example.com",
+  "subject": "Invoice January 2026",
+  "body": "Please find attached your invoice.",
+  "cc": "",
+  "status": "draft",
+  "created_at": "2026-02-19T14:12:55.209025"
+}

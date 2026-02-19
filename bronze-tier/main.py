@@ -6,12 +6,46 @@ from datetime import datetime
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
+from agent_skills import (
+    SkillRegistry,
+    ClassifySkill,
+    MoveToeDoneSkill,
+    UpdateDashboardSkill,
+    TaskPlannerSkill,
+    VaultFileManagerSkill,
+    VaultWatcherSkill,
+    HumanApprovalSkill,
+    GmailSendSkill,
+    LinkedInPostSkill,
+)
+
 VAULT = Path(__file__).parent / "AI_Employee_Vault"
 INBOX = VAULT / "Inbox"
 NEEDS_ACTION = VAULT / "Needs_Action"
 DONE = VAULT / "Done"
 SYSTEM_LOGS = VAULT / "System_Logs.md"
 DASHBOARD = VAULT / "Dashboard.md"
+
+VAULT_PATHS = {
+    "vault": VAULT,
+    "inbox": INBOX,
+    "needs_action": NEEDS_ACTION,
+    "done": DONE,
+    "system_logs": SYSTEM_LOGS,
+    "dashboard": DASHBOARD,
+}
+
+# Initialize skill registry
+registry = SkillRegistry(VAULT_PATHS)
+registry.register(ClassifySkill)
+registry.register(MoveToeDoneSkill)
+registry.register(UpdateDashboardSkill)
+registry.register(TaskPlannerSkill)
+registry.register(VaultFileManagerSkill)
+registry.register(VaultWatcherSkill)
+registry.register(HumanApprovalSkill)
+registry.register(GmailSendSkill)
+registry.register(LinkedInPostSkill)
 
 
 def log_entry(message: str) -> None:
@@ -20,103 +54,6 @@ def log_entry(message: str) -> None:
     with open(SYSTEM_LOGS, "a", encoding="utf-8") as f:
         f.write(line)
     print(f"{timestamp} {message}")
-
-
-def classify_task(file_path: Path) -> str:
-    content = ""
-    for encoding in ("utf-8-sig", "utf-16", "utf-8", "cp1252"):
-        try:
-            content = file_path.read_text(encoding=encoding).lower()
-            break
-        except (UnicodeDecodeError, ValueError):
-            continue
-
-    if "urgent" in content:
-        urgency = "High"
-    elif "soon" in content:
-        urgency = "Medium"
-    else:
-        urgency = "Low"
-
-    with open(file_path, "a", encoding="utf-8") as f:
-        f.write(f"\nUrgency: {urgency}\n")
-
-    log_entry(f"Classified: {file_path.name} → Urgency: {urgency}")
-    return urgency
-
-
-def update_dashboard() -> None:
-    now = datetime.now().strftime("%Y-%m-%d %H:%M")
-    inbox_count = len([f for f in INBOX.iterdir() if f.is_file()])
-    action_count = len([f for f in NEEDS_ACTION.iterdir() if f.is_file()])
-    done_files = [f for f in DONE.iterdir() if f.is_file()]
-    done_count = len(done_files)
-
-    # Read urgency from each completed file
-    tasks = []
-    for f in sorted(done_files, key=lambda x: x.stat().st_mtime):
-        urgency = "Low"
-        content = ""
-        for encoding in ("utf-8-sig", "utf-16", "utf-8", "cp1252"):
-            try:
-                content = f.read_text(encoding=encoding)
-                break
-            except (UnicodeDecodeError, ValueError):
-                continue
-        for line in content.splitlines():
-            if line.startswith("Urgency:"):
-                urgency = line.split(":", 1)[1].strip()
-                break
-        tasks.append((f.name, urgency))
-
-    # Build completed tasks table
-    task_rows = ""
-    for name, urgency in tasks:
-        task_rows += f"| {name} | {urgency} |\n"
-    if not task_rows:
-        task_rows = "| — | — |\n"
-
-    dashboard = f"""# Dashboard — AI Employee Vault
-
-## System Status
-
-| Field | Value |
-|---|---|
-| **Status** | ONLINE |
-| **Last Updated** | {now} |
-| **Total Completed** | {done_count} |
-
-## File Counts
-
-| Folder | Count |
-|---|---|
-| Inbox | {inbox_count} |
-| Needs_Action | {action_count} |
-| Done | {done_count} |
-
-## Completed Tasks
-
-| File | Urgency |
-|---|---|
-{task_rows.rstrip()}
-"""
-
-    DASHBOARD.write_text(dashboard, encoding="utf-8")
-    log_entry("Dashboard updated.")
-
-
-def move_to_done(file_path: Path) -> None:
-    dest = DONE / file_path.name
-
-    if dest.exists():
-        stem = file_path.stem
-        suffix = file_path.suffix
-        ts = datetime.now().strftime("%Y%m%d%H%M%S")
-        dest = DONE / f"{stem}_{ts}{suffix}"
-
-    shutil.move(str(file_path), str(dest))
-    log_entry(f"Task completed: {file_path.name}")
-    update_dashboard()
 
 
 class InboxHandler(FileSystemEventHandler):
@@ -144,8 +81,10 @@ class InboxHandler(FileSystemEventHandler):
         shutil.move(str(src), str(dest))
         log_entry(f"File detected: {src.name}")
 
-        classify_task(dest)
-        move_to_done(dest)
+        # Execute agent skills pipeline
+        registry.run("classify", dest)
+        registry.run("move_to_done", dest)
+        registry.run("update_dashboard")
 
 
 def main():
@@ -156,6 +95,7 @@ def main():
     print(f"  Move to:  {NEEDS_ACTION}")
     print(f"  Logs:     {SYSTEM_LOGS}")
     print("=" * 50)
+    print(f"  Skills:   {registry.list_skills()}")
     print("  Drop files into Inbox/ to trigger processing.")
     print("  Press Ctrl+C to stop.\n")
 
