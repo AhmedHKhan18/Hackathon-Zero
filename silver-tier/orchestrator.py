@@ -38,6 +38,7 @@ from agent_skills import (
     HumanApprovalSkill,
     GmailSendSkill,
     LinkedInPostSkill,
+    WhatsAppReplySkill,
     PlanCreatorSkill,
     ApprovalWatcherSkill,
     SchedulerSkill,
@@ -103,8 +104,9 @@ class Orchestrator:
             ClassifySkill, MoveToeDoneSkill, UpdateDashboardSkill,
             TaskPlannerSkill, VaultFileManagerSkill, VaultWatcherSkill,
             HumanApprovalSkill, GmailSendSkill, LinkedInPostSkill,
-            PlanCreatorSkill, ApprovalWatcherSkill, SchedulerSkill,
-            CEOBriefingSkill, LinkedInAutoPostSkill, AuditLogSkill,
+            WhatsAppReplySkill, PlanCreatorSkill, ApprovalWatcherSkill,
+            SchedulerSkill, CEOBriefingSkill, LinkedInAutoPostSkill,
+            AuditLogSkill,
         ]
         for skill in skills:
             self.registry.register(skill)
@@ -172,7 +174,9 @@ class Orchestrator:
                     continue
 
             # Execute based on action type
-            if "linkedin" in content or "linkedin" in f.name.lower():
+            if "whatsapp" in content or "whatsapp" in f.name.lower():
+                self.registry.run("whatsapp_reply", f)
+            elif "linkedin" in content or "linkedin" in f.name.lower():
                 self.registry.run("linkedin_auto_post", f)
             elif "email" in content or "email" in f.name.lower():
                 self.registry.run("gmail_send", f)

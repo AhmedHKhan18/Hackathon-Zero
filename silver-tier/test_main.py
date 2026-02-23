@@ -21,6 +21,7 @@ from agent_skills import (
     HumanApprovalSkill,
     GmailSendSkill,
     LinkedInPostSkill,
+    WhatsAppReplySkill,
     PlanCreatorSkill,
     ApprovalWatcherSkill,
     SchedulerSkill,
@@ -39,6 +40,7 @@ ALL_SKILLS = [
     HumanApprovalSkill,
     GmailSendSkill,
     LinkedInPostSkill,
+    WhatsAppReplySkill,
     PlanCreatorSkill,
     ApprovalWatcherSkill,
     SchedulerSkill,
@@ -158,7 +160,7 @@ class TestFolderStructure:
 class TestSkillRegistry:
     def test_registry_has_all_skills(self, test_vault):
         skills = test_vault["registry"].list_skills()
-        assert len(skills) == 15
+        assert len(skills) == 16
 
     def test_registry_has_bronze_skills(self, test_vault):
         skills = test_vault["registry"].list_skills()
@@ -170,10 +172,13 @@ class TestSkillRegistry:
         for s in bronze_skills:
             assert s in skills, f"Missing bronze skill: {s}"
 
+    def test_registry_has_whatsapp_reply(self, test_vault):
+        assert "whatsapp_reply" in test_vault["registry"].list_skills()
+
     def test_registry_has_silver_skills(self, test_vault):
         skills = test_vault["registry"].list_skills()
         silver_skills = [
-            "plan_creator", "approval_watcher", "scheduler",
+            "whatsapp_reply", "plan_creator", "approval_watcher", "scheduler",
             "ceo_briefing", "linkedin_auto_post", "audit_log",
         ]
         for s in silver_skills:
@@ -594,6 +599,75 @@ class TestLinkedInPostSkill:
         test_vault["registry"].run("linkedin_post", f)
         logs = test_vault["logs"].read_text(encoding="utf-8")
         assert "LinkedIn draft created" in logs
+
+
+# ── WhatsAppReplySkill Tests ─────────────────────────────────
+
+
+class TestWhatsAppReplySkill:
+    def test_creates_reply_draft(self, test_vault, monkeypatch):
+        monkeypatch.setenv("DRY_RUN", "true")
+        f = test_vault["needs_action"] / "WHATSAPP_client_20260223.md"
+        f.write_text(
+            "---\ntype: whatsapp_message\nfrom: Client A\nphone: +1234567890\n---\n\n"
+            "### Message Content\nHey, can you send me the invoice for January?\n",
+            encoding="utf-8",
+        )
+        result = test_vault["registry"].run("whatsapp_reply", f)
+        assert result["status"] == "draft"
+        assert result["to"] == "Client A"
+
+    def test_draft_file_is_valid_json(self, test_vault, monkeypatch):
+        monkeypatch.setenv("DRY_RUN", "true")
+        f = test_vault["needs_action"] / "WHATSAPP_client_20260223.md"
+        f.write_text(
+            "---\nfrom: Bob\nphone: +111\n---\n\n### Message Content\nUrgent help needed\n",
+            encoding="utf-8",
+        )
+        result = test_vault["registry"].run("whatsapp_reply", f)
+        draft_path = test_vault["vault"] / result["draft_file"]
+        assert draft_path.exists()
+        data = json.loads(draft_path.read_text(encoding="utf-8"))
+        assert data["status"] == "draft"
+        assert data["to"] == "Bob"
+        assert "phone" in data
+
+    def test_extracts_message_content(self, test_vault, monkeypatch):
+        monkeypatch.setenv("DRY_RUN", "true")
+        f = test_vault["needs_action"] / "WHATSAPP_test_20260223.md"
+        f.write_text(
+            "---\nfrom: Alice\nphone: +999\n---\n\n"
+            "### Message Content\nPlease send the payment details ASAP\n\n"
+            "## Suggested Actions\n- Reply\n",
+            encoding="utf-8",
+        )
+        result = test_vault["registry"].run("whatsapp_reply", f)
+        draft_path = test_vault["vault"] / result["draft_file"]
+        data = json.loads(draft_path.read_text(encoding="utf-8"))
+        assert "payment details" in data["original_message"].lower()
+
+    def test_dry_run_mode(self, test_vault, monkeypatch):
+        monkeypatch.setenv("DRY_RUN", "true")
+        f = test_vault["needs_action"] / "WHATSAPP_test_20260223.md"
+        f.write_text("---\nfrom: Test\n---\n\n### Message Content\nHello\n", encoding="utf-8")
+        result = test_vault["registry"].run("whatsapp_reply", f)
+        assert result["mode"] == "dry_run"
+
+    def test_logs_draft_creation(self, test_vault, monkeypatch):
+        monkeypatch.setenv("DRY_RUN", "true")
+        f = test_vault["needs_action"] / "WHATSAPP_test_20260223.md"
+        f.write_text("---\nfrom: Test User\n---\n\n### Message Content\nHi\n", encoding="utf-8")
+        test_vault["registry"].run("whatsapp_reply", f)
+        logs = test_vault["logs"].read_text(encoding="utf-8")
+        assert "WhatsApp reply draft" in logs
+
+    def test_approval_for_whatsapp(self, test_vault):
+        f = test_vault["needs_action"] / "task.txt"
+        f.write_text("Reply on WhatsApp to client about order", encoding="utf-8")
+        result = test_vault["registry"].run("human_approval", f)
+        # WhatsApp isn't a direct keyword for HumanApprovalSkill action_type detection
+        # but the approval is created successfully
+        assert result["status"] == "awaiting_approval"
 
 
 # ── PlanCreatorSkill Tests (Silver Tier) ────────────────────

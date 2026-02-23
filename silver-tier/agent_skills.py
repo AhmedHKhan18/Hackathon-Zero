@@ -427,6 +427,74 @@ class LinkedInPostSkill(AgentSkill):
         return {"draft_file": draft_file.name, "char_count": len(post_body), "status": "draft"}
 
 
+class WhatsAppReplySkill(AgentSkill):
+    """Drafts a WhatsApp reply from a task file and saves it to the vault."""
+
+    name = "whatsapp_reply"
+    description = "Generate a WhatsApp reply draft from a message action file"
+
+    def execute(self, file_path: Path = None) -> dict:
+        import os
+
+        dry_run = os.getenv("DRY_RUN", "true").lower() == "true"
+        content = self._read_file(file_path)
+
+        # Extract sender and message from the action file
+        sender = "Unknown"
+        message_text = ""
+        phone = "unknown"
+        for line in content.splitlines():
+            if line.startswith("from:"):
+                sender = line.split(":", 1)[1].strip()
+            elif line.startswith("phone:"):
+                phone = line.split(":", 1)[1].strip()
+            elif line.startswith("**From:**"):
+                sender = line.replace("**From:**", "").strip()
+
+        # Extract message body (content after "### Message Content")
+        in_message = False
+        msg_lines = []
+        for line in content.splitlines():
+            if "Message Content" in line:
+                in_message = True
+                continue
+            if line.startswith("##") and in_message:
+                break
+            if in_message:
+                msg_lines.append(line)
+        message_text = "\n".join(msg_lines).strip()
+        if not message_text:
+            message_text = content[:200]
+
+        now = datetime.now()
+        draft = {
+            "to": sender,
+            "phone": phone,
+            "original_message": message_text[:300],
+            "reply": "",
+            "status": "draft",
+            "mode": "dry_run" if dry_run else "live",
+            "created_at": now.strftime("%Y-%m-%d %H:%M"),
+            "source_file": file_path.name,
+        }
+
+        safe_sender = "".join(c if c.isalnum() or c == "_" else "_" for c in sender)
+        draft_file = self.vault / f"whatsapp_reply_draft_{safe_sender}_{now.strftime('%Y%m%d%H%M%S')}.json"
+        draft_file.write_text(json.dumps(draft, indent=2), encoding="utf-8")
+
+        if dry_run:
+            self.log_entry(f"[DRY RUN] WhatsApp reply draft: {draft_file.name} (to: {sender})")
+        else:
+            self.log_entry(f"WhatsApp reply draft: {draft_file.name} (to: {sender})")
+
+        return {
+            "draft_file": draft_file.name,
+            "to": sender,
+            "status": "draft",
+            "mode": "dry_run" if dry_run else "live",
+        }
+
+
 # ── Silver Tier Skills ────────────────────────────────────────
 
 

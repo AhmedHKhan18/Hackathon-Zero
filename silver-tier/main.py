@@ -31,6 +31,7 @@ from agent_skills import (
     HumanApprovalSkill,
     GmailSendSkill,
     LinkedInPostSkill,
+    WhatsAppReplySkill,
     PlanCreatorSkill,
     ApprovalWatcherSkill,
     SchedulerSkill,
@@ -80,6 +81,7 @@ registry.register(VaultWatcherSkill)
 registry.register(HumanApprovalSkill)
 registry.register(GmailSendSkill)
 registry.register(LinkedInPostSkill)
+registry.register(WhatsAppReplySkill)
 registry.register(PlanCreatorSkill)
 registry.register(ApprovalWatcherSkill)
 registry.register(SchedulerSkill)
@@ -176,7 +178,9 @@ class ApprovalHandler(FileSystemEventHandler):
                 continue
 
         # Execute based on action type
-        if "linkedin" in content or "linkedin" in src.name.lower():
+        if "whatsapp" in content or "whatsapp" in src.name.lower():
+            registry.run("whatsapp_reply", src)
+        elif "linkedin" in content or "linkedin" in src.name.lower():
             registry.run("linkedin_auto_post", src)
         elif "email" in content or "email" in src.name.lower():
             registry.run("gmail_send", src)
