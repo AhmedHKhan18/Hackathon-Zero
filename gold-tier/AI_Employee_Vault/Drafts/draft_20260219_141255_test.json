@@ -1,0 +1,8 @@
+{
+  "to": "test@example.com",
+  "subject": "Test Email",
+  "body": "This is a test email from the MCP server.",
+  "cc": "",
+  "status": "draft",
+  "created_at": "2026-02-19T14:12:55.062738"
+}

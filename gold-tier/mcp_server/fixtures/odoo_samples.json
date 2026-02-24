@@ -1,0 +1,118 @@
+{
+  "accounts": [
+    {
+      "id": 1,
+      "name": "Bank Account",
+      "code": "1010",
+      "balance": 45250.00,
+      "currency": "USD",
+      "type": "asset"
+    },
+    {
+      "id": 2,
+      "name": "Accounts Receivable",
+      "code": "1200",
+      "balance": 12800.00,
+      "currency": "USD",
+      "type": "asset"
+    },
+    {
+      "id": 3,
+      "name": "Accounts Payable",
+      "code": "2000",
+      "balance": -8500.00,
+      "currency": "USD",
+      "type": "liability"
+    },
+    {
+      "id": 4,
+      "name": "Revenue",
+      "code": "4000",
+      "balance": 89500.00,
+      "currency": "USD",
+      "type": "income"
+    },
+    {
+      "id": 5,
+      "name": "Operating Expenses",
+      "code": "5000",
+      "balance": 52300.00,
+      "currency": "USD",
+      "type": "expense"
+    }
+  ],
+  "invoices": [
+    {
+      "id": "INV-2026-001",
+      "client": "Acme Corp",
+      "client_email": "billing@acmecorp.com",
+      "amount": 5000.00,
+      "currency": "USD",
+      "status": "paid",
+      "date_issued": "2026-01-15",
+      "date_due": "2026-02-15",
+      "date_paid": "2026-02-10",
+      "items": [
+        {"description": "AI Consulting - January", "quantity": 20, "unit_price": 250.00}
+      ]
+    },
+    {
+      "id": "INV-2026-002",
+      "client": "TechStart Ltd",
+      "client_email": "accounts@techstart.io",
+      "amount": 3200.00,
+      "currency": "USD",
+      "status": "sent",
+      "date_issued": "2026-02-01",
+      "date_due": "2026-03-01",
+      "date_paid": null,
+      "items": [
+        {"description": "Software Development", "quantity": 16, "unit_price": 200.00}
+      ]
+    },
+    {
+      "id": "INV-2026-003",
+      "client": "DataFlow Inc",
+      "client_email": "finance@dataflow.com",
+      "amount": 4600.00,
+      "currency": "USD",
+      "status": "draft",
+      "date_issued": "2026-02-20",
+      "date_due": "2026-03-20",
+      "date_paid": null,
+      "items": [
+        {"description": "Data Pipeline Setup", "quantity": 1, "unit_price": 3000.00},
+        {"description": "Training Sessions", "quantity": 4, "unit_price": 400.00}
+      ]
+    }
+  ],
+  "payments": [
+    {
+      "id": "PAY-2026-001",
+      "invoice_id": "INV-2026-001",
+      "amount": 5000.00,
+      "method": "bank_transfer",
+      "date": "2026-02-10",
+      "reference": "ACM-FEB-2026"
+    }
+  ],
+  "profit_loss": {
+    "period": "2026-02",
+    "revenue": {
+      "consulting": 45000.00,
+      "software_development": 32000.00,
+      "training": 12500.00,
+      "total": 89500.00
+    },
+    "expenses": {
+      "salaries": 35000.00,
+      "software_licenses": 5200.00,
+      "office": 4800.00,
+      "marketing": 3500.00,
+      "misc": 3800.00,
+      "total": 52300.00
+    },
+    "net_profit": 37200.00,
+    "profit_margin_pct": 41.6
+  }
+}
