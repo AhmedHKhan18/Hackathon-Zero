@@ -1,0 +1,9 @@
+{
+  "platform": "facebook",
+  "content": "Hello from AI Employee! Testing Facebook auto-post. #AI",
+  "char_count": 55,
+  "posted_at": "2026-04-08T11:54:50.291972",
+  "mode": "live",
+  "status": "error",
+  "error": "FACEBOOK_PAGE_ID or FACEBOOK_PAGE_TOKEN not set"
+}

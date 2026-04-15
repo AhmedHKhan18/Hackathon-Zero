@@ -1,0 +1,8 @@
+{
+  "content": "Testing LinkedIn auto post from AI Employee #AI",
+  "char_count": 47,
+  "posted_at": "2026-04-07T13:20:53.232707",
+  "mode": "live",
+  "status": "error",
+  "error": "Locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"button:has-text(\\\"Start a post\\\"), button[class*=\\\"share-box-feed-entry__trigger\\\"], div[class*=\\\"share-box-feed-entry__trigger\\\"]\").first\n"
+}

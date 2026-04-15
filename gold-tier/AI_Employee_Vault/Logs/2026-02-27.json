@@ -1,0 +1,23 @@
+[
+  {
+    "timestamp": "2026-02-27T15:06:49.156157",
+    "action_type": "watcher_start",
+    "actor": "LinkedInWatcher",
+    "details": "LinkedInWatcher started",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-27T16:02:53.070252",
+    "action_type": "watcher_start",
+    "actor": "LinkedInWatcher",
+    "details": "LinkedInWatcher started",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-27T16:06:16.547498",
+    "action_type": "watcher_start",
+    "actor": "LinkedInWatcher",
+    "details": "LinkedInWatcher started",
+    "result": "success"
+  }
+]

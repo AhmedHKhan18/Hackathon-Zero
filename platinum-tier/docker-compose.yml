@@ -1,0 +1,60 @@
+# Odoo Community 19 — Self-hosted local setup for AI Employee Gold Tier
+#
+# Usage:
+#   docker compose up -d        # Start Odoo + PostgreSQL
+#   docker compose down          # Stop
+#   docker compose logs -f odoo  # View Odoo logs
+#
+# After startup:
+#   - Odoo Web: http://localhost:8069
+#   - Create your first database on first visit
+#   - Install the "Invoicing" or "Accounting" module
+#
+# Connect AI Employee to this Odoo instance:
+#   ODOO_URL=http://localhost:8069
+#   ODOO_DB=your_database_name
+#   ODOO_USERNAME=admin
+#   ODOO_API_KEY=your_api_key   (Settings > Users > API Keys)
+
+services:
+  db:
+    image: postgres:16
+    container_name: odoo_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo_password
+      POSTGRES_DB: postgres
+    volumes:
+      - odoo_db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  odoo:
+    image: odoo:19.0
+    container_name: odoo_server
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      HOST: db
+      PORT: 5432
+      USER: odoo
+      PASSWORD: odoo_password
+    volumes:
+      - odoo_data:/var/lib/odoo
+      - odoo_addons:/mnt/extra-addons
+    ports:
+      - "8069:8069"
+      - "8072:8072"
+
+volumes:
+  odoo_db_data:
+  odoo_data:
+  odoo_addons:

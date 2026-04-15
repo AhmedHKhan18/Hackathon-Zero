@@ -1,0 +1,38 @@
+[Unit]
+Description=AI Employee Health Monitor (Platinum Tier)
+Documentation=https://github.com/AhmedHKhan18/hackathon-zero
+After=network-online.target
+Wants=cloud-agent.service
+PartOf=ai-employee.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/platinum-tier
+
+EnvironmentFile=/home/ubuntu/platinum-tier/.env
+Environment="PATH=/home/ubuntu/platinum-tier/venv/bin:/usr/local/bin:/usr/bin:/bin"
+Environment="AGENT_ID=cloud-agent"
+Environment="HEALTH_PORT=8080"
+
+ExecStart=/home/ubuntu/platinum-tier/venv/bin/python health_monitor.py \
+    --vault-path /home/ubuntu/platinum-tier/AI_Employee_Vault \
+    --port 8080 \
+    --heartbeat-interval 120 \
+    --no-watchdog
+
+Restart=always
+RestartSec=10
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=health-monitor
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/home/ubuntu/platinum-tier
+
+[Install]
+WantedBy=multi-user.target
