@@ -1,0 +1,9 @@
+{
+  "platform": "facebook",
+  "content": "Hello from AI Employee! Testing Facebook auto-post. #AI",
+  "char_count": 55,
+  "posted_at": "2026-04-08T12:17:35.359867",
+  "mode": "live",
+  "status": "error",
+  "error": "HTTP Error 400: Bad Request"
+}

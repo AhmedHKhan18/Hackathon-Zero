@@ -1,0 +1,9 @@
+{
+  "platform": "facebook",
+  "content": "Hello from AI Employee! #AI\n\u0a0d\u7255\u6567\u636e\u3a79\u4c20\u776f\u0a0d",
+  "char_count": 36,
+  "posted_at": "2026-04-08T11:49:50.539070",
+  "mode": "live",
+  "status": "error",
+  "error": "FACEBOOK_PAGE_ID or FACEBOOK_PAGE_TOKEN not set"
+}
